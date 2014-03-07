@@ -82,6 +82,7 @@ yesno() {
 #
 clip() {
 	[[ -n $SELECTION ]] || SELECTION="selection"
+	[[ -n $SLEEPTIME ]] || SLEEPTIME=45
 
 	# This base64 business is a disgusting hack to deal with newline inconsistancies
 	# in shell. There must be a better way to deal with this, but because I'm a dolt,
@@ -90,7 +91,7 @@ clip() {
 	before="$(xclip -o -selection $SELECTION | base64)"
 	echo -n "$1" | xclip -selection $SELECTION
 	(
-		sleep 45
+		sleep $SLEEPTIME
 		now="$(xclip -o -selection $SELECTION | base64)"
 		if [[ $now != $(echo -n "$1" | base64) ]]; then
 			before="$now"
@@ -107,7 +108,7 @@ clip() {
 
 		echo "$before" | base64 -d | xclip -selection $SELECTION
 	) & disown
-	echo "Copied $2 to clipboard. Will clear in 45 seconds."
+	echo "Copied $2 to clipboard. Will clear in $SLEEPTIME seconds."
 }
 tmpdir() {
 	if [[ -d /dev/shm && -w /dev/shm && -x /dev/shm ]]; then
